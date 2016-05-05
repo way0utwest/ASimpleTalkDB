@@ -1,5 +1,6 @@
 CREATE TABLE [dbo].[GitDemo]
 (
-[myid] [int] NULL
+[myid] [int] NULL,
+[Myxol] [bit] NULL
 ) ON [PRIMARY]
 GO
