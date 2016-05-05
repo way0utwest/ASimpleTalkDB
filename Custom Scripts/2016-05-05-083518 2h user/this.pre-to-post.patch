@@ -1,0 +1,23 @@
+diff --git a/Tables/dbo.SQlinthecity7.sql b/Tables/dbo.SQlinthecity7.sql
+index 809d023..e69de29 100644
+--- a/Tables/dbo.SQlinthecity7.sql
++++ b/Tables/dbo.SQlinthecity7.sql
+@@ -1,6 +0,0 @@
+-CREATE TABLE [dbo].[SQlinthecity7]
+-(
+-[id] [int] NULL,
+-[secondif] [int] NULL
+-) ON [PRIMARY]
+-GO
+diff --git a/Tables/dbo.SQlinthecity8.sql b/Tables/dbo.SQlinthecity8.sql
+new file mode 100644
+index 0000000..dd83626
+--- /dev/null
++++ b/Tables/dbo.SQlinthecity8.sql
+@@ -0,0 +1,6 @@
++CREATE TABLE [dbo].[SQlinthecity8]
++(
++[id] [int] NULL,
++[secondif] [int] NULL
++) ON [PRIMARY]
++GO
