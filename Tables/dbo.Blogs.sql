@@ -1,34 +1,46 @@
 CREATE TABLE [dbo].[Blogs]
 (
-[BlogsID] [int] NOT NULL IDENTITY(1, 1),
-[AuthorID] [int] NULL,
-[Title] [char] (142) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-[Article] [varchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-[PublishDate] [datetime] NULL,
-[subtitle] [varchar] (1000) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+[BlogID] [int] NOT NULL IDENTITY(1, 1),
+[BlogName] [varchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+[modifieddate] [datetime2] (3) NOT NULL CONSTRAINT [dfSysDateTime] DEFAULT (sysdatetime()),
+[createdate] [datetime2] (3) NOT NULL CONSTRAINT [df_SysUTCDate] DEFAULT (sysdatetime()),
+[BlogTagline] [varchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+[BlogURL] [varchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
+) ON [PRIMARY]
 GO
-ALTER TABLE [dbo].[Blogs] ADD CONSTRAINT [PK__Blogs__C03C1E467AEB09A9] PRIMARY KEY CLUSTERED  ([BlogsID]) ON [PRIMARY]
+SET QUOTED_IDENTIFIER ON
 GO
-ALTER TABLE [dbo].[Blogs] ADD CONSTRAINT [FK_BlogAuthor] FOREIGN KEY ([AuthorID]) REFERENCES [dbo].[Contacts] ([ContactsID])
+SET ANSI_NULLS ON
 GO
-DENY REFERENCES ON  [dbo].[Blogs] TO [public]
+CREATE TRIGGER [dbo].[BlogArchiveModDate] ON [dbo].[Blogs] FOR UPDATE
+AS
+INSERT dbo.BlogArchive_ModDate
+(   BlogID,
+    modifieddate
+)
+SELECT Deleted.BlogID,
+       Deleted.modifieddate 
+ FROM Deleted
 GO
-GRANT SELECT ON  [dbo].[Blogs] TO [public]
+SET QUOTED_IDENTIFIER ON
 GO
-DENY INSERT ON  [dbo].[Blogs] TO [public]
+SET ANSI_NULLS ON
 GO
-DENY DELETE ON  [dbo].[Blogs] TO [public]
+CREATE TRIGGER [dbo].[Blogs_DateChange] ON [dbo].[Blogs] FOR UPDATE
+AS
+BEGIN
+    INSERT Blog_Archive
+	SELECT top 10
+	 Deleted.BlogID,
+     Deleted.BlogName,
+     Deleted.modifieddate,
+     Deleted.createdate,
+     Deleted.BlogTagline,
+     Deleted.BlogURL
+	 FROM Deleted
+END
 GO
-DENY UPDATE ON  [dbo].[Blogs] TO [public]
+ALTER TABLE [dbo].[Blogs] ADD CONSTRAINT [CK_blogs_blank] CHECK ((len([BlogName])>(0)))
 GO
-EXEC sp_addextendedproperty N'MS_Description', N'Blog posts made by Simple Talk members', 'SCHEMA', N'dbo', 'TABLE', N'Blogs', NULL, NULL
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'The body text for the Blog', 'SCHEMA', N'dbo', 'TABLE', N'Blogs', 'COLUMN', N'Article'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'Authors link back to the Contacts table', 'SCHEMA', N'dbo', 'TABLE', N'Blogs', 'COLUMN', N'AuthorID'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'Date the Blog was published', 'SCHEMA', N'dbo', 'TABLE', N'Blogs', 'COLUMN', N'PublishDate'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'Title of a Blog', 'SCHEMA', N'dbo', 'TABLE', N'Blogs', 'COLUMN', N'Title'
+ALTER TABLE [dbo].[Blogs] ADD CONSTRAINT [PK_Blogs] PRIMARY KEY CLUSTERED  ([BlogID]) ON [PRIMARY]
 GO

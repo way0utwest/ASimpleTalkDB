@@ -8,27 +8,25 @@ CREATE TABLE [dbo].[Articles]
 [PublishDate] [datetime] NULL,
 [ModifiedDate] [datetime] NULL,
 [URL] [char] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-[Comments] [int] NULL,
-[ReleaseDate] [datetime] NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+[Comments] [int] NOT NULL CONSTRAINT [df_Zero] DEFAULT ((0)),
+[ReadingTimeEstimate] [time] NULL,
+[CreatedDate] [datetime2] (3) NOT NULL,
+[ModifiedBy] [nvarchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL CONSTRAINT [DF__Articles__Modifi__3F3159AB] DEFAULT (suser_name())
+) ON [PRIMARY]
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+CREATE TRIGGER [dbo].[Articles_triu] ON [dbo].[Articles] FOR INSERT, UPDATE
+AS
+BEGIN
+    UPDATE dbo.Articles
+	 SET ModifiedDate = GETDATE()
+	 , ModifiedBy = SUSER_SNAME()
+	 FROM inserted i
+	 WHERE i.ArticlesID = Articles.ArticlesID
+END
 GO
 ALTER TABLE [dbo].[Articles] ADD CONSTRAINT [PK_Article] PRIMARY KEY CLUSTERED  ([ArticlesID]) ON [PRIMARY]
-GO
-ALTER TABLE [dbo].[Articles] ADD CONSTRAINT [FK_Author] FOREIGN KEY ([AuthorID]) REFERENCES [dbo].[Contacts] ([ContactsID])
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'Table of Simple Talk articles', 'SCHEMA', N'dbo', 'TABLE', N'Articles', NULL, NULL
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'The actual article content', 'SCHEMA', N'dbo', 'TABLE', N'Articles', 'COLUMN', N'Article'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'The number of reader comments for a given article', 'SCHEMA', N'dbo', 'TABLE', N'Articles', 'COLUMN', N'Comments'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'A short description of the article going between the title and "read more"', 'SCHEMA', N'dbo', 'TABLE', N'Articles', 'COLUMN', N'Description'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'When the article was last modified', 'SCHEMA', N'dbo', 'TABLE', N'Articles', 'COLUMN', N'ModifiedDate'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'When the article was published', 'SCHEMA', N'dbo', 'TABLE', N'Articles', 'COLUMN', N'PublishDate'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'The main title - appears on main web page as well as heading the article page', 'SCHEMA', N'dbo', 'TABLE', N'Articles', 'COLUMN', N'Title'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'The hyperlink when the title or "read more" is clicked', 'SCHEMA', N'dbo', 'TABLE', N'Articles', 'COLUMN', N'URL'
 GO
