@@ -1,6 +1,6 @@
 CREATE TABLE [dbo].[Contacts]
 (
-[ContactsID] [int] NOT NULL IDENTITY(1, 1),
+[ContactsID] [int] NOT NULL IDENTITY(101, 1),
 [ContactFullName] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 [PhoneWork] [nvarchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 [PhoneMobile] [nvarchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
