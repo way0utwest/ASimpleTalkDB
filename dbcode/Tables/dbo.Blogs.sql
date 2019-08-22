@@ -8,38 +8,6 @@ CREATE TABLE [dbo].[Blogs]
 [BlogURL] [varchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
 ) ON [PRIMARY]
 GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_NULLS ON
-GO
-CREATE TRIGGER [dbo].[BlogArchiveModDate] ON [dbo].[Blogs] FOR UPDATE
-AS
-INSERT dbo.BlogArchive_ModDate
-(   BlogID,
-    modifieddate
-)
-SELECT Deleted.BlogID,
-       Deleted.modifieddate 
- FROM Deleted
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_NULLS ON
-GO
-CREATE TRIGGER [dbo].[Blogs_DateChange] ON [dbo].[Blogs] FOR UPDATE
-AS
-BEGIN
-    INSERT Blog_Archive
-	SELECT top 10
-	 Deleted.BlogID,
-     Deleted.BlogName,
-     Deleted.modifieddate,
-     Deleted.createdate,
-     Deleted.BlogTagline,
-     Deleted.BlogURL
-	 FROM Deleted
-END
-GO
 ALTER TABLE [dbo].[Blogs] ADD CONSTRAINT [CK_blogs_blank] CHECK ((len([BlogName])>(0)))
 GO
 ALTER TABLE [dbo].[Blogs] ADD CONSTRAINT [PK_Blogs] PRIMARY KEY CLUSTERED  ([BlogID]) ON [PRIMARY]
