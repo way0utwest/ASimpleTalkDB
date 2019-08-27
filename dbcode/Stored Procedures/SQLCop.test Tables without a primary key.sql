@@ -5,43 +5,43 @@ GO
 CREATE PROCEDURE [SQLCop].[test Tables without a primary key]
 AS
 BEGIN
-	-- Written by George Mastros
-	-- February 25, 2012
-	-- http://sqlcop.lessthandot.com
-	-- http://blogs.lessthandot.com/index.php/DataMgmt/DBProgramming/best-practice-every-table-should-have-a
-	
-	SET NOCOUNT ON
-	
-	DECLARE @Output VarChar(max)
-	SET @Output = ''
 
-	SELECT	@Output = @Output + su.name + '.' + AllTables.Name + Char(13) + Char(10)
-	FROM	(
-			SELECT	Name, id, uid
-			From	sysobjects
-			WHERE	xtype = 'U'
-			) AS AllTables
-			INNER JOIN sysusers su
-				On AllTables.uid = su.uid
-			LEFT JOIN (
-				SELECT parent_obj
-				From sysobjects
-				WHERE  xtype = 'PK'
-				) AS PrimaryKeys
-				ON AllTables.id = PrimaryKeys.parent_obj
-	WHERE	PrimaryKeys.parent_obj Is Null
-			AND su.name <> 'tSQLt'
-	ORDER BY su.name,AllTables.Name
+-- Assemble
+DECLARE @output nvarchar(max)
 
-	If @Output > '' 
-		Begin
-			Set @Output = Char(13) + Char(10) 
-						  + 'For more information:  '
-						  + 'http://blogs.lessthandot.com/index.php/DataMgmt/DBProgramming/best-practice-every-table-should-have-a' 
-						  + Char(13) + Char(10) 
-						  + Char(13) + Char(10) 
-						  + @Output
-			EXEC tSQLt.Fail @Output
-		End	
-END;
+-- act
+SELECT AllTables.name
+ INTO #actual
+  FROM    ( SELECT    o.name ,
+                    o.object_id AS id ,
+                    COALESCE( e. value, 0) AS 'PKException'
+          FROM      sys.objects o
+                    INNER JOIN sys.schemas s ON s. schema_id = o.schema_id
+----------------------------------
+---- New Code --------------------
+----------------------------------
+                    LEFT OUTER JOIN sys.extended_properties e ON o.object_id = e .major_id
+                                                              AND e.value = 1
+                                                              AND e.class_desc = 'OBJECT_OR_COLUMN'
+                                                              AND e.name = 'PKException'
+----------------------------------
+---- New Code --------------------
+----------------------------------
+          WHERE     o.type = 'U'
+                    AND s.name <> 'tsqlt'
+        ) AS AllTables
+        LEFT JOIN ( SELECT  parent_object_id
+                    FROM    sys.objects
+                    WHERE   type = 'PK'
+                  ) AS PrimaryKeys ON AllTables.id = PrimaryKeys.parent_object_id
+WHERE    PrimaryKeys.parent_object_id IS NULL
+        AND AllTables.PKException = 0
+ORDER BY AllTables.name;
+
+-- assert
+EXEC tsqlt.AssertEmptyTable @TableName = N'#actual', -- nvarchar(max)
+  @Message = N'There are tables without a primary key.' -- nvarchar(max)
+END
+
+
 GO

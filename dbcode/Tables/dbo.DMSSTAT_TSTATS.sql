@@ -19,3 +19,7 @@ CREATE TABLE [dbo].[DMSSTAT_TSTATS]
 GO
 CREATE NONCLUSTERED INDEX [IX_DMSSTAT_TSTATS_A] ON [dbo].[DMSSTAT_TSTATS] ([runid], [ruleid]) ON [PRIMARY]
 GO
+DECLARE @xp int
+SELECT @xp=1
+EXEC sp_addextendedproperty N'PKException', @xp, 'SCHEMA', N'dbo', 'TABLE', N'DMSSTAT_TSTATS', NULL, NULL
+GO
