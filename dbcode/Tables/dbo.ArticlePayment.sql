@@ -19,9 +19,3 @@ GRANT SELECT ON  [dbo].[ArticlePayment] TO [WebUsers]
 GO
 GRANT UPDATE ON  [dbo].[ArticlePayment] TO [WebUsers]
 GO
-EXEC sp_addextendedproperty N'MS_Description', N'payment information for published articles', 'SCHEMA', N'dbo', 'TABLE', N'ArticlePayment', NULL, NULL
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'FK to authors in contact table', 'SCHEMA', N'dbo', 'TABLE', N'ArticlePayment', 'COLUMN', N'ContactID'
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'latest date', 'SCHEMA', N'dbo', 'TABLE', N'ArticlePayment', 'COLUMN', N'PublishDate'
-GO
