@@ -1,0 +1,7 @@
+CREATE TABLE [dbo].[NewTable]
+(
+[NewTableID] [int] NOT NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[NewTable] ADD CONSTRAINT [NewTablePK] PRIMARY KEY CLUSTERED  ([NewTableID]) ON [PRIMARY]
+GO
